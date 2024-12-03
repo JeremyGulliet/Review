@@ -111,15 +111,30 @@ export const Card = ({
         >
           <BsRepeat size={20} className="text-gray-500 cursor-pointer" />
         </button>
-        <button
-          onClick={onAddCard}
-          className="hover:scale-125 transition-transform"
-        >
-          <IoMdAddCircleOutline
-            size={20}
-            className="text-gray-500 cursor-pointer"
-          />
-        </button>
+        <div className="relative">
+          <button
+            onClick={onAddCard}
+            disabled={isMainCard && rating === 0}
+            className={`hover:scale-125 transition-transform relative group ${
+              isMainCard && rating === 0 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            <IoMdAddCircleOutline
+              size={20}
+              className="text-gray-500 cursor-pointer"
+            />
+            {isMainCard && rating === 0 && (
+              <div
+                className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2
+                    bg-black text-white text-xs px-2 py-1 rounded
+                    opacity-0 group-hover:opacity-100 transition-opacity
+                    whitespace-nowrap"
+              >
+                Sélectionnez au moins 1 étoile
+              </div>
+            )}
+          </button>
+        </div>
       </div>
 
       <h1 className="font-semibold text-xl sm:text-2xl text-center text-[#333333] px-2">
