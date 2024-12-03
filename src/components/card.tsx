@@ -1,5 +1,6 @@
 import { BsRepeat } from "react-icons/bs";
 import { AiOutlineStar, AiFillStar } from "react-icons/ai";
+import { IoCloseOutline } from "react-icons/io5";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { motion } from "framer-motion";
 
@@ -11,6 +12,8 @@ interface CardProps {
   title?: string;
   comment?: string;
   onReset: () => void;
+  onDelete?: (id: number) => void;
+  id?: number;
 }
 
 export const Card = ({
@@ -21,6 +24,8 @@ export const Card = ({
   title,
   comment,
   onReset,
+  onDelete,
+  id,
 }: CardProps) => {
   const handleClick = (starIndex: number) => {
     if (!isMainCard) return;
@@ -35,46 +40,56 @@ export const Card = ({
   // Design pour les cards d'avis
   if (!isMainCard) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 
-                  w-full max-w-[280px] p-4 border border-gray-100 hover:border-purple-200"
-      >
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex gap-1">
-            {Array.from({ length: 5 }, (_, index) => (
-              <div key={index} className="w-4 h-4">
-                {index < rating ? (
-                  <AiFillStar size={16} className="text-[#7B61FF]" />
-                ) : (
-                  <AiOutlineStar size={16} className="text-[#7B61FF]" />
-                )}
-              </div>
-            ))}
+      <div className="relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 
+          w-full max-w-[280px] p-4 border border-gray-100 hover:border-purple-200">
+        <div className="flex flex-col gap-3">
+          {/* Header avec 3 sections : étoiles, date, et bouton suppression */}
+          <div className="grid grid-cols-[1fr_auto_auto] items-start gap-2">
+            <div className="flex gap-1">
+              {Array.from({ length: 5 }, (_, index) => (
+                <div key={index} className="w-4 h-4">
+                  {index < rating ? (
+                    <AiFillStar size={16} className="text-[#7B61FF]" />
+                  ) : (
+                    <AiOutlineStar size={16} className="text-[#7B61FF]" />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <span className="text-xs text-gray-400 mt-1">
+              {new Date().toLocaleDateString()}
+            </span>
+
+            <button
+              onClick={() => onDelete && id && onDelete(id)}
+              className="w-6 h-6 flex items-center justify-center
+                      rounded-full hover:bg-red-50 transition-colors group ml-2"
+            >
+              <IoCloseOutline className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
+            </button>
           </div>
-          <span className="text-xs text-gray-400">
-            {new Date().toLocaleDateString()}
-          </span>
-        </div>
 
-        <h3 className="font-semibold text-lg text-[#333333] mb-2 line-clamp-2">
-          {title || "Avis utilisateur"}
-        </h3>
+          <div className="flex flex-col gap-2">
+            <h3 className="font-semibold text-lg text-[#333333] line-clamp-2">
+              {title || "Avis utilisateur"}
+            </h3>
 
-        <p className="text-base text-[#333333] line-clamp-3 min-h-[3rem]">
-          {comment || "Pas de commentaire"}
-        </p>
+            <p className="text-base text-[#333333] line-clamp-3 min-h-[3rem]">
+              {comment || "Pas de commentaire"}
+            </p>
+          </div>
 
-        <div className="mt-3 flex items-center">
-          <div className="bg-purple-50 text-[#7B61FF] text-xs px-2 py-1 rounded-full">
-            {rating}/5
+          <div className="flex items-center">
+            <div className="bg-purple-50 text-[#7B61FF] text-xs px-2 py-1 rounded-full">
+              {rating}/5
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   }
+    
 
   // Design pour la card principale
   return (

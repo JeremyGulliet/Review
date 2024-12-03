@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 // page.tsx
 "use client";
 import { Card } from "@/components/card";
@@ -42,6 +43,8 @@ export default function Home() {
   };
 
   const stats = getRatingStats();
+  const { deleteCard } = useCardStore();
+
 
   return (
     <main className="min-h-screen py-12">
@@ -115,52 +118,77 @@ export default function Home() {
 
         {/* Actions */}
         <div className="flex justify-center mb-12">
-          <button
-            onClick={clearAllCards}
-            className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg 
-                     transition-colors duration-200 font-medium shadow-md"
-          >
-            Supprimer tous les avis
-          </button>
+          <div className="relative group">
+            <button
+              onClick={clearAllCards}
+              disabled={true} // Forcer le bouton à être désactivé
+              className="px-6 py-3 rounded-lg transition-colors duration-200 font-medium shadow-md bg-gray-400 cursor-not-allowed text-white"
+            >
+              Supprimer tous les avis
+            </button>
+
+            {/* Tooltip toujours visible */}
+            <div
+              className="absolute -top-12 left-1/2 transform -translate-x-1/2 
+          bg-gray-800 text-white text-sm px-3 py-1 rounded-md 
+          opacity-0 group-hover:opacity-100 transition-opacity 
+          whitespace-nowrap"
+            >
+              Tu n'as pas les droits pour supprimer les avis
+            </div>
+          </div>
         </div>
 
         {/* Liste des Avis */}
-        <AnimatePresence>
-          <div className="space-y-8">
-            <h2 className="text-3xl font-bold text-center text-gray-800">
-              Avis des utilisateurs
-            </h2>
-            <div className="flex flex-wrap gap-6 justify-center">
-              {cards.length === 0 ? (
-                <div className="col-span-full text-center text-black">
-                  Aucun avis pour le moment
-                </div>
-              ) : (
-                cards.map((card) => (
-                  <Card
-                    key={card.id}
-                    rating={card.rating}
-                    title={card.title}
-                    comment={card.comment}
-                    onRatingChange={(rating) =>
-                      updateCardRating(card.id, rating)
-                    }
-                    onAddCard={() => {}}
-                    isMainCard={false}
-                    onReset={resetRating}
-                  />
-                ))
-              )}
-            </div>
-          </div>
-        </AnimatePresence>
-      </div>
+        <div className="space-y-8">
+  <h2 className="text-3xl font-bold text-center text-gray-800">
+    Avis des utilisateurs
+  </h2>
+  {cards.length === 0 ? (
+    <div className="col-span-full text-center text-black">
+      Aucun avis pour le moment
+    </div>
+  ) : (
+    <div className="flex flex-wrap gap-6 justify-center">
+      <AnimatePresence initial={false}>
+        {cards.map((card) => (
+          <motion.div
+            key={card.id}
+            layout // Ajoute une transition fluide lors des changements de position
+            initial={{ x: 500, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -500, opacity: 0 }}
+            transition={{
+              duration: 2,
+              type: "spring",
+              damping: 25,
+              stiffness: 120
+            }}
+          >
+            <Card
+              id={card.id}
+              rating={card.rating}
+              title={card.title}
+              comment={card.comment}
+              onRatingChange={(rating) => updateCardRating(card.id, rating)}
+              onDelete={deleteCard}
+              onAddCard={() => {}}
+              isMainCard={false}
+              onReset={resetRating}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
+  )}
+</div>
 
       <CommentModal
         isOpen={isFormOpen}
         onClose={() => setFormOpen(false)}
         onSubmit={addCard}
       />
+      </div>
     </main>
   );
 }

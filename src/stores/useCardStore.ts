@@ -17,6 +17,7 @@ interface CardStore {
   updateCardRating: (id: number, rating: number) => void;
   setMainRating: (rating: number) => void;
   clearAllCards: () => void;
+  deleteCard: (id: number) => void;
 }
 
 export const useCardStore = create<CardStore>()(
@@ -43,7 +44,11 @@ export const useCardStore = create<CardStore>()(
           )
         })),
       setMainRating: (rating) => set({ mainRating: rating }),
-      clearAllCards: () => set({ cards: [] })
+          clearAllCards: () => set({ cards: [] }),
+      deleteCard: (id) => set((state) => ({
+        cards: state.cards.filter(card => card.id !== id)
+      })),
+      
     }),
     {
       name: 'card-storage',
